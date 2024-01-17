@@ -1,0 +1,577 @@
+<!DOCTYPE html><html><head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Passive face liveness detection (anti-spoofing)">
+        <meta name="keywords" content="face-recognition,text-to-speech,artificial-intelligence,text-recognition,text-detection,text-recognition,computer-vision,content-retrieval,computer-vision,neural-network,text-detection,gpgpu,gpgpu-computing,ocr,ocr-recognition,deep-learning">
+        <meta name="author" content="Mamadou DIOP">
+        <title>3D Passive / Frictionless face liveness detection (anti-spoofing)</title>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/loader.css">
+        <script src="js/jquery-3.3.1.min.js" type="text/javascript"></script>
+        <script src="js/underscore-min.js" type="text/javascript"></script>
+        <script src="js/backbone-min.js" type="text/javascript"></script>
+        <script src="js/pretty-json-min.js" type="text/javascript"></script>
+        <script src="js/load-image.all.min.js" type="text/javascript"></script>
+        <script src="js/utils-32.js" type="text/javascript"></script>
+        <script src="js/config.js" type="text/javascript"></script>
+        <script src="js/bootstrap.bundle.min.js" type="text/javascript"></script>
+        <script src="js/api.js" type="text/javascript"></script>
+
+        <style>
+            @font-face { font-family: FontOCRB; src: url('fonts/OcrB%20Regular.ttf'); }
+            .drag-over {
+                background-color: white;
+            }
+            .list-group {
+                max-height: 400px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            .blockquote-footer {
+                font-size:0.8rem;
+                text-align: right;
+            }
+            .mb-0 {
+                font-size:0.8rem;
+            }
+            .hr-dashed {
+                border:none;
+                border-top:1px dashed pink;
+                color:#fff;
+                background-color:#fff;
+                height:1px;
+                width:60%;
+            }
+            pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+            .string { color: green; }
+            .number { color: darkorange; }
+            .boolean { color: blue; }
+            .null { color: magenta; }
+            .key { color: red; }
+
+        </style>
+</head>
+
+<body>
+    <!-- Nav header -->
+    <nav class="navbar navbar-light bg-light">
+        <div>
+            <a href="/" class="btn btn-outline-primary" role="button">Back home</a>
+             
+            <a href="/pricing.html" class="btn btn-outline-danger" role="button">Pricing</a>
+        </div>
+        <div>
+            <p style="text-align:justify;font-family:FontOCRB;">v0.2</p>
+        </div>
+    </nav>
+    
+     <!-- Page header -->
+     <main role="main" class="container">
+            <h1 class="mt-5" style="font-family:FontOCRB;">3D Passive face liveness detection (anti-spoofing)</h1>
+            <p class="lead d-none d-lg-block">3D Frictionless (passive) face <a href="https://itlaw.wikia.org/wiki/Liveness_detection">liveness detection</a> from a single image (selfie) using deep learning.</p>
+            <!-- 
+                hide on screens smaller than xl (Extra large screen / wide desktop)
+                https://getbootstrap.com/docs/4.2/layout/grid/#variables
+                https://getbootstrap.com/docs/4.0/utilities/display/#hiding-elements
+            -->
+            <p style="text-align:justify;"> 
+                To our knowledge <b>we are the only company in the world</b> that can perform <b style="font-family:FontOCRB;">3D liveness</b> check, <b style="font-family:FontOCRB;">deepfake</b><sup>experimental</sup> detection and <a href="https://www.doubango.org/SDKs/face-liveness/docs/Identity_concealment.html">identity concealment</a> detection from a single 2D image.
+                We outperform the <a href="https://www.doubango.org/SDKs/face-liveness/docs/Testing_the_competition.html#testingthecompetition">competition</a> (<a href="https://www.doubango.org/SDKs/face-liveness/docs/Testing_the_competition.html#testingthecompetition-facetec">FaceTEC</a>, <a href="https://www.doubango.org/SDKs/face-liveness/docs/Testing_the_competition.html#testingthecompetition-bioid">BioID</a>, <a href="https://www.doubango.org/SDKs/face-liveness/docs/Testing_the_competition.html#testingthecompetition-onfido">Onfido</a>, <a href="https://www.doubango.org/SDKs/face-liveness/docs/Testing_the_competition.html#testingthecompetition-huawei">Huawei</a>...) in <a href="https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK/tree/master/samples/cpp/benchmark#peformance-numbers">speed (few milliseconds)</a> and accuracy.
+            </p>
+            <p class="d-none d-lg-block" style="text-align:justify;">
+                <a href="https://www.doubango.org/SDKs/face-liveness/docs/Identity_concealment.html">Identity concealment</a> detects when a user tries to partially hide his/her face (e.g. 3D realistic mask, dark glasses...) or alter the facial features (e.g. heavy makeup, fake nose, fake beard...) to impersonate another user.
+            </p>
+            <!--p class="d-none d-lg-block" style="text-align:justify;">
+                <b style='font-family:FontOCRB;'>We have perfect scores (0% EER)</b> on multiple datasets (<b style='font-family:FontOCRB;'>NUAA, CASIA FASD, MSU...</b>). No other company or research institute ever reported such <a href='https://www.doubango.org/SDKs/face-liveness/docs/Accuracy.html'>level of accuracy</a>. This demo web page and the <a href="https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK">SDK</a> are here to allow you to challenge us.
+            </p-->
+            <!--p style="text-align:justify;">
+                Our passive face <a href="https://itlaw.wikia.org/wiki/Liveness_detection">liveness detector</a> supports both <a href='https://www.youtube.com/watch?v=QVdLJlSaeHM'>Print-Attack</a> and <a href='https://www.youtube.com/watch?v=4Z8VRTS8WrA'>Replay-Attack</a>. A single selfie-type image is needed to compute the liveness score. We also offer active liveness check as fallback when a user fails to pass the passive check.
+            </p-->
+            <p style="text-align:justify;"> 
+                <a href="https://www.doubango.org/SDKs/face-liveness/docs/Improving_recall.html#the-7-commandments">The perfect selfie</a> should be at least 720p/HD in resolution to pass the liveness check. Full documentation is hosted <a href="https://www.doubango.org/SDKs/face-liveness/docs/">here</a>.
+            </p>
+    </main>
+    
+    <div class="container"> <hr>  </div>
+
+    <!-- Fork me on Github -->
+    <a href="https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK"><img src="images/forkme_right_red_aa0000.svg" style="position:absolute;top:0;right:0;" alt="Fork me on GitHub"></a>
+    
+    <!-- Div holding the form -->
+    <div id="theFormDiv" class="container" data-toggle="tooltip" title="Drag image here or click to browse from your computer" style="display: block; position: relative; cursor: pointer; background-color:lightpink; outline: 2px dashed pink">
+        <form id="theForm" method="post" action="#" enctype="multipart/form-data" novalidate="" style="cursor: pointer">
+            <div class="form-group" style="padding-top: 10px; padding-bottom: 10px">
+                <svg style="display: block; margin-bottom:40px; fill: black" width="100%" height="80px" fill="pink" xmlns="https://www.w3.org/2000/svg" viewBox="0 0 50 43"><path d="M48.4 26.5c-.9 0-1.7.7-1.7 1.7v11.6h-43.3v-11.6c0-.9-.7-1.7-1.7-1.7s-1.7.7-1.7 1.7v13.2c0 .9.7 1.7 1.7 1.7h46.7c.9 0 1.7-.7 1.7-1.7v-13.2c0-1-.7-1.7-1.7-1.7zm-24.5 6.1c.3.3.8.5 1.2.5.4 0 .9-.2 1.2-.5l10-11.6c.7-.7.7-1.7 0-2.4s-1.7-.7-2.4 0l-7.1 8.3v-25.3c0-.9-.7-1.7-1.7-1.7s-1.7.7-1.7 1.7v25.3l-7.1-8.3c-.7-.7-1.7-.7-2.4 0s-.7 1.7 0 2.4l10 11.6z"></path></svg>
+                <input type="file" id="inputFile" style="display: none" accept=".png,.jpg,.jpeg,.bmp,.gif">
+                <label style="cursor: pointer; text-align:center; display: block; font-size:1.25rem; font-family: Roboto, sans-serif">Drag image here or click to select a file or camera for selfie</label>
+                <button type="submit" style="display: none">Upload</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Div holding the canvas and result -->
+    <div id="theResultDiv" class="container" style="display: none; position: relative; text-align: center; margin: auto">
+        <table id="theTableDiv" style="border: 0px solid red; width: 100%">
+            <tbody><tr style="height:100%">
+                <!-- The cell with the canvas to display the image and bounding boxes -->
+                <td style="padding:0; width: 60%; height: 100%; text-align: center; vertical-align: top; cursor: pointer;" title="Drag image here or click to browse from your computer">
+                    <div id="theCanvasDiv" style="border: 0px solid pink; display:inline-block; width:100%; ">
+                        <div id="theLoaderDiv" class="loader"> 
+                            <svg class="circular" viewBox="25 25 50 50">
+                                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"></circle>
+                            </svg> 
+                        </div>
+                        <canvas id="theCanvas" style="border: 0px solid black; height: 100%; width: 100%">
+                            Your browser doesn't support canvas!
+                        </canvas>
+                        <label id="labelProcessing" class="text-muted" style="padding: 0; margin: 0; text-align: center; width: 100%; font-size:0.8rem; position:relative">Procesing time: <b>12 milliseconds</b></label>
+                    </div>
+                </td>
+                <!-- The cell with the JSON result and OCR text -->
+                <td class="d-none d-md-block" style="padding-left: 5px; height:100%; text-align: center; vertical-align: top">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" id="nav-document-tab" data-toggle="tab" href="#nav-document" role="tab" aria-controls="nav-document" aria-selected="true">Document</a>
+                            <a class="nav-item nav-link" id="nav-json-tab" data-toggle="tab" href="#nav-json" role="tab" aria-controls="nav-json" aria-selected="false">JSON</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-document" role="tabpanel" aria-labelledby="nav-document-tab">
+                            <div class="list-group" id="theFacesDiv">
+                                <!-- Zones will be added here at runtime -->
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-json" role="tabpanel" aria-labelledby="nav-json-tab" style="text-align: left">
+                            <small class="text-muted" style="padding: 5px">Click on the ellipsis to expend the nodes</small>
+                            <pre id="jsonViewer" class="list-group" title="Click on the ellipsis to expend the nodes"></pre>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+
+    <!-- Div holding the samples -->
+    <div id="theSamplesDiv" class="container" style="display: block; position: relative; text-align: left; margin: auto">
+        <br> 
+        <p class="lead">...or see some stored results (select below images to load) </p>
+        <table style="border: 0px solid red; width: 100%; margin: auto">
+            <tbody><tr>
+                <td style="text-align: center"><img id="theSample9Img" src="images/sample9_lowres.jpg" alt="Sample #4" title="Select to try" class="img-sample img-sample-gray"> </td>
+                <td style="text-align: center"><img id="theSample4Img" src="images/sample4_lowres.jpg" alt="Sample #4" title="Select to try" class="img-sample img-sample-gray"> </td>
+                <td style="text-align: center"><img id="theSample5Img" src="images/sample5_lowres.jpg" alt="Sample #5" title="Select to try" class="img-sample img-sample-gray"></td>
+                <td style="text-align: center"><img id="theSample6Img" src="images/sample6_lowres.jpg" alt="Sample #6" title="Select to try" class=" img-sample img-sample-gray"></td>
+                <td style="text-align: center"><img id="theSample7Img" src="images/sample7_lowres.jpg" alt="Sample #7" title="Select to try" class=" img-sample img-sample-gray"></td>
+                <td style="text-align: center"><img id="theSample8Img" src="images/sample8_lowres.jpg" alt="Sample #7" title="Select to try" class=" img-sample img-sample-gray"></td>
+            </tr>
+        </tbody></table>
+        <br> 
+        <p class="lead">...the original images are <a href="img/sample9_highres.jpg" target="_blank">here</a>, <a href="img/sample4_highres.jpg" target="_blank">here</a>, <a href="img/sample5_highres.jpg" target="_blank">here</a>, <a href="img/sample6_highres.jpg" target="_blank">here</a>, <a href="img/sample7_highres.jpg" target="_blank">here</a> and <a href="img/sample8_highres.jpg" target="_blank">here</a> </p>
+    </div>
+
+    <script type="text/javascript">
+            'use strict';
+        
+            $(document).ready(function() {
+                var serviceAddr = (appsConfig.face_liveness || {serviceAddr: window.atob("aHR0cHM6Ly9mcmExLmNsb3VkLmRvdWJhbmdvLm9yZzo5MTAw")}).serviceAddr;
+                var faceHTML = "<a href='#' class='list-group-item list-group-item-action flex-column align-items-start'>" +
+                                    "<blockquote class='blockquote text-left'>" +
+                                        "<p class='mb-0'><b>{0}</b></p>" +
+                                        "{1}" +
+                                    "</blockquote>" +
+                                "</a>";
+                var fieldsHTML = "<p class='mb-0'>{0}</p>";
+                var theForm = document.getElementById("theForm");
+                var theFormDiv = document.getElementById("theFormDiv");
+                var theResultDiv = document.getElementById("theResultDiv");
+                var theCanvasDiv = document.getElementById("theCanvasDiv");
+                var theFacesDiv = document.getElementById("theFacesDiv");
+                var theLoaderDiv = document.getElementById("theLoaderDiv");
+                var inputFile = document.getElementById("inputFile");
+                var canvas = document.getElementById("theCanvas");
+                var jsonViewer = document.getElementById("jsonViewer");
+                var theSamplesImgs = [ document.getElementById("theSample9Img"), document.getElementById("theSample4Img"), document.getElementById("theSample5Img"), document.getElementById("theSample6Img"), document.getElementById("theSample7Img"), document.getElementById("theSample8Img") ];
+                var attachedFiles = null;
+                var elementsAcceptingDragNDrop = [theForm, theFormDiv, theCanvasDiv, canvas];
+                var elementsAcceptingFileDialogOpen = [theFormDiv, theCanvasDiv]; // Parent divs only (do not mix overlapping controls) to avoid double rise
+                var states = {
+                    initial: "initial",
+                    processing: "processing",
+                    success: "success",
+                    failed: "failed"
+                };
+                var canvasPosition = {
+                    ratio: 1,
+                    xoffset: 0,
+                    yoffset: 0
+                };
+                function triggerFormSubmit(token, resultJsonUrl) {
+                    var file = attachedFiles[0];
+                    if (file.size > appsConfig.maxContentSizeInBytes) {
+                        alert('Too large: ' + file.size + 'B > ' + appsConfig.maxContentSizeInBytes + 'B');
+                        changeState(states.failed);
+                        return ;
+                    }
+                    var event = document.createEvent( 'HTMLEvents' );
+                    event.initEvent( 'submit', true, true );
+                    event.resultJsonUrl = resultJsonUrl;
+                    event.reCAPTCHA_token = token;
+                    if (!event.resultJsonUrl) { // 'resultJsonUrl' not null means we already have the result (maybe a sample)
+                        // Attach file to the form and send to the server
+                        event.formData = new FormData();
+                        event.formData.append('file', file, file.name);
+                    }
+                    theForm.dispatchEvent( event );
+                }
+                
+                function changeState(state, description) {
+                    theLoaderDiv.style.display = (state === states.processing) ? "block" : "none";
+                    labelProcessing.style.display = (state === states.initial) ? "none" : "block";
+                    if (state === states.initial) {
+                        resetDisplay();
+
+                        theFormDiv.style.display = "block";
+                        theResultDiv.style.display = "none";
+
+                        reCAPTCHA_execute('face_liveness_load');
+                    }
+                    else if (state === states.processing) {
+                        resetDisplay();
+
+                        labelProcessing.innerHTML = (description || "Processing...");
+
+                        theFormDiv.style.display = "none";
+                        theResultDiv.style.display = "block";
+                    }
+                    else if (state === states.success) {
+                        theForm.reset();
+                        if (description !== undefined) {
+                            labelProcessing.innerHTML = description;
+                        }
+                    }
+                    else if (state === states.failed) {
+                        theForm.reset();
+                        labelProcessing.innerHTML = "Failed. Click (or drag & drop) on the image to <a id='tryAgain' href='#'>try again</a>.";
+                    }
+                }
+                function resetDisplay() {
+                    theFacesDiv.innerHTML = "";
+                    jsonViewer.innerHTML = "";
+                }
+                function renderFace(ctx, face) {
+                    var warpedBox = extractScaledWarpedBox(face.warpedBox, canvasPosition);
+                    ctx.strokeStyle = face.liveness_code == 's_spoof'
+                    ? 'red'
+                    : (face.liveness_code == 's_genuine' ? 'green' : (face.liveness_code == 's_disputed' ? 'orange' : (face.liveness_code == 's_disguise' ? 'pink' : (face.liveness_code == 's_deepfake' ? 'chocolate' : 'yellow'))));
+                    ctx.setLineDash(face.liveness_code == 'e_back' ? [5, 3] : []); // solid lines for front and dashed for back
+                    ctx.lineWidth = (face.liveness_code == 'e_back' || face.liveness_code == 'e_small') ? 2 : 5;
+                    drawWarpedBox(ctx, warpedBox);
+
+                    // Draw landmarks
+                    if (face.landmarks && face.landmarks.length > 0 && face.landmarks[0].type === '2d5') {
+                        ctx.fillStyle = ctx.strokeStyle;
+                        var recsize = (face.liveness_code == 'e_back') ? 3 : 7;
+                        var landmarks = extractScaledWarpedBox(face.landmarks[0].values, canvasPosition);
+                        for (var i = 0; i < landmarks.length; i += 2) {
+                            ctx.fillRect(landmarks[i], landmarks[i + 1], recsize, recsize);
+                        }
+                    }
+
+                    // Draw description for the main face
+                    if (face.liveness_code !== 'e_back') {
+                        var texts = [
+                            { text: face.liveness_code.substring(2, face.liveness_code.length), score: face.liveness_score }, // [0]-liveness
+                            { text: face.liveness_warn || face.liveness_hint || null }, // [1]-Hint/warn
+                            { text: typeof face.disguise_score !== 'undefined' ? 'Concealment' : null, score: face.disguise_score }, // [2]-Disguise
+                            { text: typeof face.deepfake_score !== 'undefined' ? 'Deepfake' : null, score: face.deepfake_score }, // [3]-Deepfake
+                        ];
+                        // Draw texts
+                        for (var i = 0; i < texts.length; ++i) {
+                            var text = texts[i].text;
+                            if (!text) {
+                                continue;
+                            }
+                            if (typeof texts[i].score !== 'undefined') {
+                                text += ' (' + texts[i].score.toFixed(2) + '%)';
+                            }
+                            if (i == 1) {
+                                text = (typeof face.liveness_warn !== 'undefined' ? 'warn: ' : 'hint: ') + text;
+                            }
+                            ctx.font = (i == 0) ? "bold 20pt FontOCRB" : "15pt FontOCRB";
+                            var textWidth = ctx.measureText(text).width;
+                            var textSize = { width: textWidth, height: textWidth / (text.length * 0.5) };
+                            var halfStrokeWidth = ctx.lineWidth * 0.5;
+                            var textPos = { 
+                                x: (i == 3) ? warpedBox[2] : warpedBox[0], 
+                                y: (i == 0) ? (warpedBox[1] - ctx.lineWidth) : ((i == 1) ? (warpedBox[7] - ctx.lineWidth + textSize.height) : warpedBox[7])
+                            };
+
+                            ctx.save();
+                            if (i == 2 || i == 3) { // 2:disguise, 3:deepfake
+                                // disguise or deepfake
+                                var xoffset = (i == 3) ? textSize.height : 0
+                                ctx.translate(textPos.x + xoffset, textPos.y);
+                                ctx.rotate(-Math.PI/2);
+
+                                ctx.fillStyle = ctx.strokeStyle;
+                                ctx.fillRect(-halfStrokeWidth, -textSize.height, textSize.width + ctx.lineWidth*2, textSize.height + halfStrokeWidth);
+
+                                ctx.fillStyle = "blue";
+                                ctx.fillText(text, 0, 0);                           
+                            }
+                            else {
+                                ctx.fillStyle = ctx.strokeStyle;
+                                ctx.fillRect(textPos.x - halfStrokeWidth, textPos.y - textSize.height + halfStrokeWidth, textSize.width + ctx.lineWidth*2, textSize.height + halfStrokeWidth);
+
+                                ctx.fillStyle = "black";
+                                ctx.fillText(text, textPos.x, textPos.y);
+                            }
+                            ctx.restore();
+                        }
+                    }
+
+                     // Fields
+                    var fieldsString = "<ul>";
+                    fieldsString += "<li class='mb-0'>" + escapeHtml('liveness_code') + ": <b style='font-family:FontOCRB;'>"+ escapeHtml(face.liveness_code) + "</b></li>";
+                    if (typeof face.liveness_score !== 'undefined') {
+                        fieldsString += "<li class='mb-0'>" + escapeHtml('liveness_score') + ": <b style='font-family:FontOCRB;'>"+ face.liveness_score.toFixed(2) + "%</b></li>";
+                    }
+                    if (typeof face.liveness_hint !== 'undefined') {
+                        fieldsString += "<li class='mb-0'>" + escapeHtml('liveness_hint') + ": <b style='font-family:FontOCRB;'>"+ escapeHtml(face.liveness_hint) + "</b></li>";
+                    }
+                    if (typeof face.liveness_warn !== 'undefined') {
+                        fieldsString += "<li class='mb-0'>" + escapeHtml('liveness_warn') + ": <b style='font-family:FontOCRB;'>"+ escapeHtml(face.liveness_warn) + "</b></li>";
+                    }
+                    if (typeof face.disguise_score !== 'undefined') {
+                        fieldsString += "<li class='mb-0'>" + escapeHtml('disguise_score') + ": <b style='font-family:FontOCRB;'>"+ face.disguise_score.toFixed(2) + "%</b></li>";
+                    }
+                    if (typeof face.deepfake_score !== 'undefined') {
+                        fieldsString += "<li class='mb-0'>" + escapeHtml('deepfake_score') + ": <b style='font-family:FontOCRB;'>"+ face.deepfake_score.toFixed(2) + "%</b></li>";
+                    }
+                    fieldsString += "<li class='mb-0'>" + escapeHtml('face_detection') + ": <b style='font-family:FontOCRB;'>"+ face.detection_score.toFixed(2) + "%</b></li>";
+                    fieldsString += "<li class='mb-0'>" + escapeHtml('face_size') + ": <b style='font-family:FontOCRB;'>("+ Math.round(face.warpedBox[2]-face.warpedBox[0]) + ' per ' + Math.round(face.warpedBox[7]-face.warpedBox[1]) +") px</b></li>";
+                    fieldsString += "</ul>";
+
+                    // HTML
+                    theFacesDiv.insertAdjacentHTML( 'beforeend', 
+                        formatString(faceHTML, escapeHtml('Face'), 
+                            formatString(fieldsHTML, fieldsString)
+                        )
+                    );                
+                }
+
+                // Thumbnails are reduced (lowres) images and MUST not be used for testing.
+                // Disable right-click to force the user to use highres images
+                $('img').bind('contextmenu', function(e) {
+                    return false;
+                }); 
+                
+                // Signal initial state
+                changeState(states.initial);
+
+                // Set canvas size
+                {   /* https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio */
+                    // Set display size (css pixels).
+                    var oldDisplay = theResultDiv.style.display;
+                    theResultDiv.style.display = "block"; // display
+                    canvas.style.width = theCanvasDiv.offsetWidth + "px";
+                    canvas.style.height = theCanvasDiv.offsetHeight + "px";
+
+                    // Set actual size in memory (scaled to account for extra pixel density).
+                    var scale = (window.devicePixelRatio || 1);
+                    canvas.width = theCanvasDiv.offsetWidth * scale;
+                    canvas.height = theCanvasDiv.offsetHeight * scale;
+                    theResultDiv.style.display = oldDisplay;
+                }
+    
+                // Submit the form when new file is selected
+                inputFile.addEventListener( 'change', function( e ) {
+                    attachedFiles = e.target.files;
+                    changeState(states.processing, "File selected");
+                    reCAPTCHA_execute('face_liveness_change', function(token) {
+                        triggerFormSubmit(token);
+                    });
+                });
+
+                 // Image samples events
+                 theSamplesImgs.forEach(function( imgSample ) {
+                    imgSample.addEventListener( 'mouseover', function( e ) {
+                        imgSample.classList.remove("img-sample-gray");
+                    });
+                    imgSample.addEventListener( 'mouseout', function( e ) {
+                        if (!imgSample.classList.contains("img-sample-gray")) {
+                            imgSample.classList.add("img-sample-gray");
+                        }
+                    });
+                    imgSample.addEventListener( 'click', function( e ) {
+                        var highres_imgurl = e.target.src.replace('lowres', 'highres');
+                        var highres_jsonurl = highres_imgurl.replace('.jpg', '.json');
+                        $.ajax({
+                            url: highres_imgurl,
+                            cache: false,
+                            xhrFields: {
+                                responseType: 'blob'
+                            },
+                            beforeSend: function () {
+                                changeState(states.processing, "Preparing to send...");
+                            },
+                            success: function(data) {
+                                attachedFiles = [new Blob([data], { type: "image/jpeg" })];
+                                reCAPTCHA_execute('face_liveness_sample', function(token) {
+                                    triggerFormSubmit(token, highres_jsonurl);
+                                });
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                alert(textStatus + ': ' + errorThrown);
+                                changeState(states.failed);
+                            }
+                        });
+                    });
+                });
+    
+                // Open the file dialog when the div holding the form is clicked
+                elementsAcceptingFileDialogOpen.forEach(function( element ) {
+                    element.addEventListener( 'click', function( e ) {
+                        inputFile.click();
+                    });
+                });
+    
+                [ 'drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop' ].forEach( function( event ) {
+                    elementsAcceptingDragNDrop.forEach(function( element ) {
+                        element.addEventListener( event, function( e ) {
+                            // preventing the unwanted behaviours
+                            e.preventDefault();
+                            e.stopPropagation();
+                        });
+                    });
+                });
+                [ 'dragover', 'dragenter' ].forEach( function( event ) {
+                    elementsAcceptingDragNDrop.forEach(function( element ) {
+                        element.addEventListener( event, function() {
+                            element.classList.add("drag-over");
+                        });
+                    });
+                });
+                [ 'dragleave', 'dragend', 'drop' ].forEach( function( event ) {
+                    elementsAcceptingDragNDrop.forEach(function( element ) {
+                        element.addEventListener( event, function() {
+                            element.classList.remove("drag-over");
+                        });
+                    });
+                });
+                elementsAcceptingDragNDrop.forEach(function( element ) {
+                    element.addEventListener( 'drop', function( e ) {
+                        attachedFiles = e.dataTransfer.files;
+                        changeState(states.processing, "File drop");
+                        reCAPTCHA_execute('face_liveness_drop', function(token) {
+                            triggerFormSubmit(token);
+                        });
+                    });
+                });
+
+                // if the form was submitted
+                theForm.addEventListener( 'submit', function( e ) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    var file = attachedFiles[0];
+                    var reCAPTCHA_token = (e.reCAPTCHA_token || appsConfig.reCAPTCHA_faketoken);
+                    var ajaxFormData = e.formData;
+                    var ajaxUrl = (e.resultJsonUrl || serviceAddr) + '?liveness=1&deepfake=0';
+                    var ajaxRequestType = (e.resultJsonUrl ? 'GET' : 'POST');
+                    loadImage(
+                        file,
+                        function(img, data) {
+                            if (img.type === "error") {
+                                alert("Error loading image " + file);
+                                return;
+                            }
+
+                            // Reset context
+                            var ctx = canvas.getContext("2d");
+                            ctx.setTransform(1, 0, 0, 1, 0, 0);
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.lineWidth = 3.0;
+                            ctx.imageSmoothingQuality = "high";
+                            ctx.imageSmoothingEnabled = true;
+                        
+                            // Draw the image
+                            drawImageScaled(img, ctx, canvasPosition)
+    
+                            // Send data
+                            $.ajax({
+                                url: ajaxUrl,
+                                data: ajaxFormData,
+                                type: ajaxRequestType,
+                                cache: false,
+                                contentType: false,
+                                processData: false,
+                                headers: {
+                                    "reCAPTCHA": reCAPTCHA_token,
+                                },
+                                beforeSend: function () {
+                                    changeState(states.processing, "Preparing to send...");
+                                },
+                                success: function (jsonData) {
+                                    var node = new PrettyJSON.view.Node({ 
+                                            el:jsonViewer, 
+                                            data:jsonData
+                                    });
+                                    var faces = jsonData.faces;
+                                    if (faces.length > 0) {
+                                        for (var i = 0; i < faces.length; ++i) {
+                                            renderFace(ctx, faces[i]);
+                                        }
+                                    }
+                                    else {
+                                        theFacesDiv.innerHTML = "No face found on the image.";
+                                    }
+                                    var successInfo = ((ajaxRequestType === 'GET') ? "Loaded stored result. " : "Computing time: <b>"+jsonData.duration+" milliseconds</b>. ")
+                                                                     + "Click (or drag & drop) on the image box to <a id='tryAgain' href='javascript:void(0)'>try again</a>";
+                                    changeState(states.success, successInfo);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    alert(textStatus + ': ' + errorThrown);
+                                    changeState(states.failed);
+                                },
+                                xhr: function() {
+                                    var xhr = new window.XMLHttpRequest();
+                                    xhr.upload.onprogress = function(evt) { 
+                                        if (evt.lengthComputable) {
+                                            var percentage = Math.floor((evt.loaded / evt.total) * 100);
+                                            changeState(states.processing, "Uploading (<b>"+percentage+"%</b>)...");
+                                        }
+                                    };
+                                    xhr.upload.onload = function() { 
+                                        changeState(states.processing, "Computing...");
+                                    };
+                                    return xhr;
+                                }
+                            });
+                        },
+                        {
+                            orientation: true // Transform the canvas according to the specified Exif orientation
+                        }
+                    );
+
+                    return false;			
+                });
+            });
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-YRKVRSFZ28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-YRKVRSFZ28');
+    </script>
+    <!-- End Google Analytics -->
+    
+
+
+</body></html>
